@@ -69,15 +69,15 @@ class RemoveFileOrSubdir(FileSystemUpdate):
         self._path = path
 
     def apply(self, fs, root):
-        print(fs._objs.keys())
         abs_path = posixpath.join(root, self._path)
+        assert abs_path in fs._objs
+        
         print(">>> REMOVE: ", abs_path)
         if not fs.exists(abs_path): return
         if fs.isdir(abs_path):
             fs.removedir(abs_path)
         elif fs.isfile(abs_path):
             fs.removefile(abs_path)
-        raise Exception("Path is not a file or directory")
 
     def __repr__(self):
         return f'RemoveFileOrSubdir("{self._path}")'
@@ -130,6 +130,12 @@ class ReplicatorSource:
         self._initial_sync()
         self._setup_watch()
 
+    def debug_string(self):
+        return self._fs.debug_string(self._dir_path)
+
+    def _objects(self):
+        return self._fs.get_dir_objs(self._dir_path)
+
     def _initial_sync(self):
         updates = list(create_initial_updates(self._fs, self._dir_path))
         self._send(updates)
@@ -156,11 +162,24 @@ class ReplicatorTarget:
     def __init__(self, fs: FileSystem, dir_path: str):
         self._fs = fs
         self._dir_path = dir_path
+    
+    def debug_string(self):
+        return self._fs.debug_string(self._dir_path)
 
+    def _objects(self):
+        return self._fs.get_dir_objs(self._dir_path)
+    
     def handle_request(self, request: Any) -> Any:
         """Handle a request from the ReplicatorSource."""
+        print()
+        print(">>> HANDLING REQUEST!")
+        print(">>> OLD OBJECTS: ", self._objects())
+        print(self.debug_string())
         # TODO
         for update in request.updates:
             update.apply(self._fs, self._dir_path)
-
+        
+        print(">>> NEW OBJECTS: ", self._objects())
+        print(self.debug_string())
+        
         return SyncResponse.ok()
