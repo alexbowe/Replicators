@@ -1,10 +1,6 @@
-# CodeiumOA
+# Replicators
 
-This is the question from a Codeium Online Assessment.
-
-Here is an abbreviated version of the question:
-
-Question (rough notes, not exact text):
+This is from an Online Assessment. Here is an abbreviated version of the question (rough notes, not exact text, which was dense):
 
 # Requirements
 - Replicator for directories (one machine to another)
