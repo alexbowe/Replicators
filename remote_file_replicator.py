@@ -2,10 +2,6 @@
 
 """Remote file replicator between a source and target directory."""
 
-"""
-
-"""
-
 import posixpath
 from typing import Any, Callable
 
